@@ -13,7 +13,7 @@ import storage from '@/components/mech/storage';
 import { TokenLocalData } from '@/constants/types';
 import jwt from 'react-jwt';
 import { User } from '@/hooks/useUserAuth';
-import cookie from '@/components/mech/cookie';
+//import cookie from '@/components/mech/cookie';
 import Api from '@/components/mech/api';
 
 const Tab = createBottomTabNavigator();
@@ -37,7 +37,7 @@ export default function TabLayout() {
               console.log(decr);
               User.setToken(saved, crypt, decr);
               //folder('/', saved);
-              cookie.set('token', saved);
+              //cookie.set('token', saved);
               //setDatal(decr.login);
               //alarm('Успешная авторизация', 'info')
           } catch(e: any) {
@@ -62,7 +62,7 @@ export default function TabLayout() {
                           delete(usData.token);
                           delete(usData.atoken);
                           User.setToken(token, atoken, usData);
-                          cookie.set('token', token);
+                          //cookie.set('token', token);
                           //folder('/', token);
                           //setDatal(usData.login);
                           //loading(false, 'tokenUPD')
