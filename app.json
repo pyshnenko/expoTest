@@ -4,7 +4,7 @@
     "slug": "expot",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/spamigorLogo.ico",
+    "icon": "./assets/images/spamigorLogo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/spamigorLogo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.expot"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +37,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "851e7beb-edc2-476e-991e-409dfbcfc78e"
+      }
     }
   }
 }

@@ -11,16 +11,16 @@ import { useState, useEffect } from 'react';
 import materialIcon from '../../components/ui/MaterialIcon'
 import storage from '@/components/mech/storage';
 import { TokenLocalData } from '@/constants/types';
-import jwt from '@pagopa/io-react-native-jwt';
+import jwt from 'react-jwt';
 import { User } from '@/hooks/useUserAuth';
-import cookies from '@/components/mech/cookie';
+import cookie from '@/components/mech/cookie';
 import Api from '@/components/mech/api';
 
 const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
   //storage.clear()
-
+  console.log('hello')
   const [ loginState, setLoginState ] = useState<boolean>(false);
 
   useEffect(()=>{
@@ -32,12 +32,12 @@ export default function TabLayout() {
           console.log(saved);
           let decr: TokenLocalData & {exp: number};
           try {
-              decr = jwt.decode(saved, crypt) as TokenLocalData & {exp: number};
+              decr = jwt.decodeToken(saved) as TokenLocalData & {exp: number};
               console.log('decr');
               console.log(decr);
               User.setToken(saved, crypt, decr);
               //folder('/', saved);
-              cookies.set('token', saved);
+              cookie.set('token', saved);
               //setDatal(decr.login);
               //alarm('Успешная авторизация', 'info')
           } catch(e: any) {
@@ -62,11 +62,11 @@ export default function TabLayout() {
                           delete(usData.token);
                           delete(usData.atoken);
                           User.setToken(token, atoken, usData);
-                          cookies.set('token', token);
-                          /*folder('/', token);
-                          setDatal(usData.login);
-                          loading(false, 'tokenUPD')
-                          alarm('Успешная авторизация', 'info')*/
+                          cookie.set('token', token);
+                          //folder('/', token);
+                          //setDatal(usData.login);
+                          //loading(false, 'tokenUPD')
+                          //alarm('Успешная авторизация', 'info')
                       })
                       .catch((e: any)=>{
                           console.log(e);
@@ -78,7 +78,7 @@ export default function TabLayout() {
               }
       }
       //loading(false, 'start');
-}, [])
+  }, [])
 
   useEffect(()=>{
     console.log('loginState')
