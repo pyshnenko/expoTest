@@ -3,8 +3,12 @@ import { Stack, Button } from "@react-native-material/core";
 import { useUserAuth } from '@/hooks/useUserAuth';
 import { Box, Text } from "@react-native-material/core";
 import storage from '../mech/storage';
+import useFolderLocation from "@/hooks/useFolderLocation";
 
 export default function ExitButton () {
+
+    const folder = useFolderLocation();
+
     return (
         <Stack fill center spacing={4}>
             <Text>Уверен что уходишь?</Text>
@@ -16,6 +20,7 @@ export default function ExitButton () {
                 }} />
             </Box>
             <Button title="Storage2" onPress={async () => console.log(await storage.set('test', '1234'))}/>
+            <Button title="getFolder" onPress={async () => console.log(folder.get())}/>
         </Stack>
     )
 }

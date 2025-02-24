@@ -1,36 +1,34 @@
-import { Tabs } from 'expo-router';
 import React from 'react';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '.';
-import TabTwoScreen from './explore';
-import Login from './login';
-import ExitButton from '@/components/ui/exitButton';
 import { useUserAuth, createUserAuth } from '@/hooks/useUserAuth';
-import { useState, useEffect } from 'react';
-import materialIcon from '../../components/ui/MaterialIcon'
+import { useState, useEffect, useRef } from 'react';
 import storage from '@/components/mech/storage';
 import { TokenLocalData } from '@/constants/types';
 import jwt from 'react-jwt';
 import { User } from '@/hooks/useUserAuth';
-//import cookie from '@/components/mech/cookie';
 import Api from '@/components/mech/api';
-
-const Tab = createBottomTabNavigator();
+import { LoginTabs, GuestsTabs } from '@/components/pageElements/tabs';
+import useFolderLocation, {Data} from '@/hooks/useFolderLocation';
 
 export default function TabLayout() {
   //storage.clear()
   console.log('hello')
   const [ loginState, setLoginState ] = useState<boolean>(false);
+  const [ data, setData ] = useState<Data>({directs: [], files: []});
 
-  useEffect(()=>{
+  let folderRef: React.MutableRefObject<string> = useRef('/');
+
+  const folder = useFolderLocation();
+
+  useEffect(() => {
       //loading(true, 'start');
       //if (!notVerify&&trig.current) {
           const crypt: string = String(storage.get('cloudAToken'));
+          console.log('crypt');
           console.log(crypt);
           const saved: string = String(storage.get('cloudToken'));
           console.log(saved);
           let decr: TokenLocalData & {exp: number};
+          folder.create(folderRef, data, setData);
           try {
               decr = jwt.decodeToken(saved) as TokenLocalData & {exp: number};
               console.log('decr');
@@ -55,7 +53,7 @@ export default function TabLayout() {
                       //loading(true, 'tokenUPD');
                       Api.tokenUPD(saved, crypt)
                       .then((res: any)=>{
-                          console.log(res);
+                          console.log('tokenUPD');
                           let usData = res.data;
                           const token = res.data.token;
                           const atoken = res.data.atoken;
@@ -85,73 +83,16 @@ export default function TabLayout() {
     console.log(loginState)
   }, [loginState])
 
+  useEffect(()=> {
+    console.log('layout use effect')
+    console.log(data)
+  }, [data])
+
   console.log(storage.get('cloudToken').then((res: any)=>console.log(res)))
 
   createUserAuth(loginState, setLoginState);
 
   return (
-    <Tab.Navigator>
-      {loginState ? <Tab.Screen 
-        name="Домой" 
-        component={HomeScreen} 
-        options={{
-          tabBarIcon: ({color}) => <IconSymbol size={28} color={color} name='house.fill' />
-        }}
-      /> :
-      <Tab.Screen 
-        name="Войти" 
-        component={Login} 
-        options={{
-          tabBarIcon: ({color}) => materialIcon({color, name: "login"})
-        }}
-      />}
-      {loginState ? <Tab.Screen 
-        name="Выход" 
-        component={ExitButton} 
-        options={{
-          tabBarIcon: ({color}) => materialIcon({color, name: "exit-run"})
-        }}
-      /> : <Tab.Screen 
-        name="Регистрация" 
-        component={TabTwoScreen} 
-        options={{
-          tabBarIcon: ({color}) => materialIcon({color, name: "account-plus-outline"})
-        }}
-      />
-      }
-    </Tab.Navigator>
+    <>{loginState ? <LoginTabs /> : <GuestsTabs />}</>
   )
 }
-
-  /*return (
-    <Tabs
-      screenOptions={{
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
-          tabBarBadge: 2
-        }}
-      />
-      <Tabs.Screen
-        name="Explore"
-        options={{
-          title: 'test',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="testPage"
-        options={{
-          title: 'Test',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
-  
-  
-  */
-

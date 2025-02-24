@@ -30,6 +30,7 @@ const getAuth = () => {
 }
 
 const getToken = () => {
+    console.log(stoken)
     return stoken;
 }
 
@@ -39,7 +40,9 @@ const setToken = (token: string, atoken: string, decr?: any, save: boolean = tru
         localStorage.setItem('cloudToken', token);
         localStorage.setItem('cloudAToken', atoken);
     }
+    console.log('token useUserAuth set')
     setStorage(true);
+    console.log(token)
     stoken = token;
     satoken = atoken;
     auth = true;

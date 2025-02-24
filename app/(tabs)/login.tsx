@@ -4,6 +4,7 @@ import Api from '@/components/mech/api';
 import { useUserAuth } from '@/hooks/useUserAuth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import storage from '@/components/mech/storage';
+import { User } from '@/hooks/useUserAuth';
 
 export default function Login () {
 
@@ -12,6 +13,11 @@ export default function Login () {
     const [email, setEmail] = useState<string>('');
     const [pass, setPass] = useState<string>('');
     const [emailresetMessage, setEmailResetMessage] = useState<{visible: boolean, text: string}>({visible: false, text: ''});
+
+    let emailDif = '';
+     useEffect(()=>{
+        console.log(email)
+     }, [email])
 
     const textStyle = {
         margin: 1, 
@@ -26,19 +32,16 @@ export default function Login () {
         console.log('start');
         const emailS: string = (demoMode ? 'demo' : email);
         const password: string = (demoMode ? 'demodemo' : pass);
+        console.log(emailS)
         if ((emailS==='')||(password==='')) setError({email: true, pass: true, text: 'Заполни поля'})
         else {
             setError({email: false, pass: false, text: ''})
             Api.login({pass: password, email: emailS.includes('@') ? emailS: undefined, login: emailS.includes('@') ? undefined: emailS})
             .then(async (res)=> {
-                console.log(`\n${res.status}\n`);
-                console.log(res.data.login);
-                console.log(res.data.token);
-                console.log(res.data.atoken);
                 await storage.set('cloudToken', String(res.data.token));
                 await storage.set('cloudAToken', res.data.atoken);
                 console.log('token add');
-                console.log(await storage.get('cloudToken'));
+                User.setToken(res.data.token, res.data.atoken)
                 //setError({email: true, pass: true, text: 'Неверные данные'});
                 //setOpen(false);
                 useUserAuth(true);
@@ -84,8 +87,24 @@ export default function Login () {
                 zIndex: 10
             }}>
                 {error&&<Text color="error" style={{padding: 1, zIndex: 20}}>{error.text}</Text>}
-                <TextInput color={error.email?'red':'black'} style={textStyle} id="loginBox" label="Логин/email" variant="outlined" onChange={({target}: any)=>{setEmail(target.value)}} />
-                <TextInput color={error.email?'red':'black'} style={textStyle} label="Пароль" variant="outlined" onChange={({target}: any)=>{setPass(target.value)}} />
+                <TextInput 
+                    color={error.email?'red':'black'} 
+                    style={textStyle}  
+                    id="loginBox" 
+                    label="Логин/email" 
+                    variant="outlined" 
+                    value={email}
+                    onChangeText={(text: string)=>{setEmail(text)}}
+                 />
+                <TextInput 
+                    color={error.email?'red':'black'} 
+                    style={textStyle} 
+                    label="Пароль" 
+                    variant="outlined" 
+                    autoComplete='password'
+                    value={pass}
+                    onChangeText={(evnt: string)=>{setPass(evnt)}}
+                 />
                 <Box style={{zIndex: 20}}>
                     <Button title='Вход' style={{margin: 8, boxShadow: '0 0 30px 10px white'}} variant="contained" onPress={()=>handleSubmit()} />
                 </Box>
@@ -94,9 +113,7 @@ export default function Login () {
                 variant="contained" 
                 color="secondary"
                 title='Демонстрационный режим'
-                onPress={()=>{
-                    handleSubmit(true)
-                }}
+                onPress={()=>{handleSubmit(true)}}
                 />
             </Box>}
         </Box>
