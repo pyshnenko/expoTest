@@ -1,81 +1,23 @@
-import React from 'react';
+import React, {useState, useEffect, useRef, createContext} from 'react';
 import { useUserAuth, createUserAuth } from '@/hooks/useUserAuth';
-import { useState, useEffect, useRef } from 'react';
-import storage from '@/components/mech/storage';
-import { TokenLocalData } from '@/constants/types';
-import jwt from 'react-jwt';
-import { User } from '@/hooks/useUserAuth';
-import Api from '@/components/mech/api';
 import { LoginTabs, GuestsTabs } from '@/components/pageElements/tabs';
-import useFolderLocation, {Data} from '@/hooks/useFolderLocation';
+import {Data} from '@/hooks/useFolderLocation';
+import { startAuth } from '@/components/mech/startAuth';
+import { saveContext, getContent } from '@/hooks/useFolderLocation';
+
+const FolderContext = createContext({folds: {}, location: '', setLocation: (s: string)=>{} });
 
 export default function TabLayout() {
-  //storage.clear()
-  console.log('hello')
+  console.log('\n\n\nhello\n\n\n')
   const [ loginState, setLoginState ] = useState<boolean>(false);
   const [ data, setData ] = useState<Data>({directs: [], files: []});
+  const [ location, setLocation ] = useState<string>('');
 
-  let folderRef: React.MutableRefObject<string> = useRef('/');
-
-  const folder = useFolderLocation();
+  saveContext(FolderContext);
 
   useEffect(() => {
-      //loading(true, 'start');
-      //if (!notVerify&&trig.current) {
-          const crypt: string = String(storage.get('cloudAToken'));
-          console.log('crypt');
-          console.log(crypt);
-          const saved: string = String(storage.get('cloudToken'));
-          console.log(saved);
-          let decr: TokenLocalData & {exp: number};
-          folder.create(folderRef, data, setData);
-          try {
-              decr = jwt.decodeToken(saved) as TokenLocalData & {exp: number};
-              console.log('decr');
-              console.log(decr);
-              User.setToken(saved, crypt, decr);
-              //folder('/', saved);
-              //cookie.set('token', saved);
-              //setDatal(decr.login);
-              //alarm('Успешная авторизация', 'info')
-          } catch(e: any) {
-              //setDatal('токен протух');
-              //alarm('Обновим данные', 'info')
-              //console.log(e);
-              //console.log(e.message);
-              if (e){//.message === 'jwt malformed' || e.message === 'jwt expired') {
-                  //console.log(e.expiredAt);
-                  const date = new Date(e.expiredAt);
-                  const days: number = (Number(new Date())- Number(date))/(1000*60*60*24);
-                  //console.log(`days: ${days}`);
-                  if (days > 5) window.location.href='/login';
-                  else {
-                      //loading(true, 'tokenUPD');
-                      Api.tokenUPD(saved, crypt)
-                      .then((res: any)=>{
-                          console.log('tokenUPD');
-                          let usData = res.data;
-                          const token = res.data.token;
-                          const atoken = res.data.atoken;
-                          delete(usData.token);
-                          delete(usData.atoken);
-                          User.setToken(token, atoken, usData);
-                          //cookie.set('token', token);
-                          //folder('/', token);
-                          //setDatal(usData.login);
-                          //loading(false, 'tokenUPD')
-                          //alarm('Успешная авторизация', 'info')
-                      })
-                      .catch((e: any)=>{
-                          console.log(e);
-                          User.exit();
-                          //alarm('Авторизоваться не удалось', 'warning')
-                      });
-                      //loading(false, 'start');
-                  }
-              }
-      }
-      //loading(false, 'start');
+    console.log('tablayout useeffect')
+    startAuth(setLocation)
   }, [])
 
   useEffect(()=>{
@@ -88,11 +30,23 @@ export default function TabLayout() {
     console.log(data)
   }, [data])
 
-  console.log(storage.get('cloudToken').then((res: any)=>console.log(res)))
+  useEffect(()=>{
+    console.log('layout use effect location')
+    console.log(location);
+    getContent(location)
+    .then((res: Data | null) => {
+      console.log(res)
+      if (res !== null) setData(res)
+    })
+  }, [location])
+
+  /*async function openLocation(str: string) {
+    console.log(await )
+  }*/
 
   createUserAuth(loginState, setLoginState);
 
   return (
-    <>{loginState ? <LoginTabs /> : <GuestsTabs />}</>
+    <FolderContext.Provider value={{folds: data, location: location, setLocation }}>{loginState ? <LoginTabs /> : <GuestsTabs />}</FolderContext.Provider>
   )
 }

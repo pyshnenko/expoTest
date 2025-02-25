@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Box, Text, TextInput, Button } from "@react-native-material/core";
 import Api from '@/components/mech/api';
-import { useUserAuth } from '@/hooks/useUserAuth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import storage from '@/components/mech/storage';
 import { User } from '@/hooks/useUserAuth';
 
 export default function Login () {
@@ -28,7 +25,6 @@ export default function Login () {
     }
 
     const handleSubmit = async (demoMode: boolean = false) => {
-        //event.preventDefault();
         console.log('start');
         const emailS: string = (demoMode ? 'demo' : email);
         const password: string = (demoMode ? 'demodemo' : pass);
@@ -38,13 +34,9 @@ export default function Login () {
             setError({email: false, pass: false, text: ''})
             Api.login({pass: password, email: emailS.includes('@') ? emailS: undefined, login: emailS.includes('@') ? undefined: emailS})
             .then(async (res)=> {
-                await storage.set('cloudToken', String(res.data.token));
-                await storage.set('cloudAToken', res.data.atoken);
+                console.log(res.data)
                 console.log('token add');
-                User.setToken(res.data.token, res.data.atoken)
-                //setError({email: true, pass: true, text: 'Неверные данные'});
-                //setOpen(false);
-                useUserAuth(true);
+                User.setToken(String(res.data.token), String(res.data.atoken))
             })
             .catch((e)=>{
                 console.log(e.response.status);
@@ -52,17 +44,6 @@ export default function Login () {
             });
         }
     }
-    /*style={{    
-        position: 'absolute',
-        top: '50vh',
-        left: '50vw',
-        width: '10px',
-        height: '10px',
-        backgroundColor: 'burlywood',
-        boxShadow: `-10px 0 250px 300px burlywood`,
-        borderRadius: '100px',
-        zIndex: 1
-    }}*/
     return (
         <Box>
             <Box style={{

@@ -5,11 +5,8 @@ let storage = false;
 let setStorage: (e: boolean) => void;
 
 export function useUserAuth(props: boolean | null) {
-    console.log(props)
-    console.log('useUserAuth')
     if ((props) || (props === false))
     {
-        console.log(props)
         setStorage(props)
     }
     return storage
@@ -30,19 +27,16 @@ const getAuth = () => {
 }
 
 const getToken = () => {
-    console.log(stoken)
     return stoken;
 }
 
 const setToken = (token: string, atoken: string, decr?: any, save: boolean = true) => {
 
     if (save) {
-        localStorage.setItem('cloudToken', token);
-        localStorage.setItem('cloudAToken', atoken);
+        localStorage.setItem('cloudToken', token, 'useUserAuth');
+        localStorage.setItem('cloudAToken', atoken, 'useUserAuth');
     }
-    console.log('token useUserAuth set')
     setStorage(true);
-    console.log(token)
     stoken = token;
     satoken = atoken;
     auth = true;
@@ -50,8 +44,8 @@ const setToken = (token: string, atoken: string, decr?: any, save: boolean = tru
 }
 
 const exit = () => {
-    localStorage.setItem('cloudToken', '');
-    localStorage.setItem('cloudAToken', '');
+    localStorage.setItem('cloudToken', '', 'useUserAuth');
+    localStorage.setItem('cloudAToken', '', 'useUserAuth');
     setStorage(false);
     stoken = '';
     satoken = '';

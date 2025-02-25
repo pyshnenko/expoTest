@@ -63,7 +63,7 @@ export function GuestsTabs() {
           name="Регистрация" 
           component={TabTwoScreen} 
           options={{
-            tabBarIcon: ({color}) => materialIcon({color, name: "account-plus-outline"})
+            tabBarIcon: ({color}) => materialIcon({color, name: "accessibility-new"})
           }}
         />
       </Tab.Navigator>
