@@ -1,9 +1,6 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { StyleSheet } from 'react-native';
 import { Button } from "@react-native-material/core";
 import { Box, Text } from "@react-native-material/core";
-import storage from '@/components/mech/storage';
 import Api from '@/components/mech/api';
 import {Data, FolderContext} from '@/hooks/useFolderLocation';
 import { useEffect, useContext } from 'react';
@@ -25,6 +22,7 @@ export default function HomeScreen() {
     }}>
       <Text>{data.location}</Text>
       <FilesList folds={data.folds} location={data.location} setLocation={data.setLocation} />
+      <Button title='cookies' onPress={()=>{Api.test()}} />
     </Box>
   );
 }
