@@ -5,11 +5,20 @@ import Api from '@/components/mech/api';
 import {Data, FolderContext} from '@/hooks/useFolderLocation';
 import { useEffect, useContext } from 'react';
 import FilesList from '@/components/pageElements/FilesList';
+import { getContent } from '@/hooks/useFolderLocation';
+import { Loading, useLoading } from '@/components/pageElements/loading';
 //import cookie from '@/components/mech/cookie';
 
 export default function HomeScreen() {
 
-  let data: {folds: Data, location: string, setLocation: (str: string) => void} = useContext(FolderContext);
+  const loading = useLoading;
+
+  let data: {
+    folds: Data, 
+    location: string, 
+    setLocation: (str: string) => void,
+    setData: (data: Data) => void
+  } = useContext(FolderContext);
 
   return (
     <Box style={{
@@ -22,7 +31,17 @@ export default function HomeScreen() {
     }}>
       <Text>{data.location}</Text>
       <FilesList folds={data.folds} location={data.location} setLocation={data.setLocation} />
-      <Button title='cookies' onPress={()=>{Api.test()}} />
+      {false&&<Button title='loading' onPress={()=>{
+        loading(true, 'button');
+        setTimeout(()=>{loading(false, 'button')}, 1000)
+      }} />}
+      {true&&<Button title='обновить' style={{margin: 10}} onPress={()=>{
+          getContent(data.location)
+          .then((res: Data | null) => {
+            console.log(res)
+            if (res !== null) data.setData(res)
+          })}} />}
+      {false&&<Loading />}
     </Box>
   );
 }

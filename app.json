@@ -4,7 +4,7 @@
     "slug": "expot",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/spamigorLogo.png",
+    "icon": "./assets/images/spamigorLogoO.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/spamigorLogo.png",
+        "foregroundImage": "./assets/images/spamigorLogoO.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.expot"
@@ -21,14 +21,14 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/spamigorLogo.png"
+      "favicon": "./assets/images/spamigorLogoO.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/spamigorLogo.png",
+          "image": "./assets/images/spamigorLogoO.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

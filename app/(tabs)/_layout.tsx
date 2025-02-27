@@ -5,7 +5,12 @@ import {Data} from '@/hooks/useFolderLocation';
 import { startAuth } from '@/components/mech/startAuth';
 import { saveContext, getContent } from '@/hooks/useFolderLocation';
 
-const FolderContext = createContext({folds: {}, location: '', setLocation: (s: string)=>{} });
+const FolderContext = createContext({
+  folds: {}, 
+  location: '', 
+  setLocation: (s: string)=>{}, 
+  setData: (d: {directs: string[], files: string[]})=>{}
+});
 
 export default function TabLayout() {
   console.log('\n\n\nhello\n\n\n')
@@ -32,6 +37,7 @@ export default function TabLayout() {
 
   useEffect(()=>{
     console.log('layout use effect location')
+    setData({directs: [], files: []})
     console.log(location);
     getContent(location)
     .then((res: Data | null) => {
@@ -47,6 +53,6 @@ export default function TabLayout() {
   createUserAuth(loginState, setLoginState);
 
   return (
-    <FolderContext.Provider value={{folds: data, location: location, setLocation }}>{loginState ? <LoginTabs /> : <GuestsTabs />}</FolderContext.Provider>
+    <FolderContext.Provider value={{folds: data, location: location, setLocation, setData }}>{loginState ? <LoginTabs /> : <GuestsTabs />}</FolderContext.Provider>
   )
 }
