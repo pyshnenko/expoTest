@@ -5,11 +5,14 @@ import { Data } from "@/hooks/useFolderLocation";
 import jwt from 'react-jwt';
 import { User } from "@/hooks/useUserAuth";
 import Api from "./api";
+import { useLoading } from "../pageElements/loading";
 
 export async function startAuth(setLocation: (s: string)=>void) {
+    const loading = useLoading;
     const crypt: string | null = (await storage.get('cloudAToken'));
     const saved: string | null = (await storage.get('cloudToken'));
     let decr: TokenLocalData & {exp: number};
+    loading(true, 'startFuth');
     if ((saved)&&(crypt)) {
         try {
             decr = jwt.decodeToken(saved) as TokenLocalData & {exp: number};
@@ -32,4 +35,5 @@ export async function startAuth(setLocation: (s: string)=>void) {
         User.exit();
         //window.location.href='/Войти';
     }
+    loading(false, 'startFuth');
 }

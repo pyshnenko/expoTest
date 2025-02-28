@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import copy from 'fast-copy';
 import { Box } from '@react-native-material/core';
 import Spinner from '../ui/spinner';
-import { Dimensions } from "react-native";
+import { Dimensions, Image } from "react-native";
 
 const windowDimensions = Dimensions.get('window');
 
@@ -19,8 +19,10 @@ export function useLoading(openBool: boolean, name: string) {
 export function Loading() {
 
     const [width, setWidth] = useState(windowDimensions);
+    const [deg, setDeg] = useState<number>(-1);
 
     useEffect(()=>{
+        setDeg(0)
         const subscription = Dimensions.addEventListener(
             'change',
             ({window, screen}) => {
@@ -30,19 +32,28 @@ export function Loading() {
         return () => subscription?.remove();
     }, [])
 
+    useEffect(()=>{
+        setTimeout((degN: number)=>setDeg(degN), 10, deg+2)
+        //console.log(openArr)
+    }, [deg])
+
     let [open, setOpen] = useState<string[]>(openArr);
-    useEffect(()=>{openArr = open}, [open]);
+    useEffect(()=>{
+        openArr = open
+        console.log(open)
+    }, [open]);
     openGlob = open;
     setOpenGlob = setOpen;
 
     return (
-        <Box style={{
+        <>{open.length === 0 ? null :<Box style={{
             zIndex: 10000, 
             position: 'absolute', 
             width: width.width, 
             height: width.height, 
             display: 'flex',
             justifyContent: 'center',
+            alignItems: 'center',
             top: 0,
             left: 0,
             right: 0,
@@ -55,11 +66,11 @@ export function Loading() {
                 height: '100%',
                 minHeight: width.height,
                 backgroundColor: 'white',
-                opacity: 0.7,
+                opacity: 0.95,
                 position: 'absolute',
                 top: 0,
                 left: 0
             }}/>
-            <Spinner />
-        </Box>)
+            <Image style={{zIndex:10002, transform: [{rotateZ: `${deg}deg`}]}} source={require('@/assets/images/react-logo.png')}/>
+        </Box>}</>)
 }

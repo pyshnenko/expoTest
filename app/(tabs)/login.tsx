@@ -6,15 +6,9 @@ import { User } from '@/hooks/useUserAuth';
 export default function Login () {
 
     const [error, setError] = useState<{email:boolean, pass: boolean, text: string}>({email: false, pass: false, text: ''});
-    const [open, setOpen] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
     const [pass, setPass] = useState<string>('');
     const [emailresetMessage, setEmailResetMessage] = useState<{visible: boolean, text: string}>({visible: false, text: ''});
-
-    let emailDif = '';
-     useEffect(()=>{
-        console.log(email)
-     }, [email])
 
     const textStyle = {
         margin: 1, 

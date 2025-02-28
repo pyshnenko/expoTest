@@ -30,18 +30,21 @@ export default function HomeScreen() {
       paddingTop: 35
     }}>
       <Text>{data.location}</Text>
-      <FilesList folds={data.folds} location={data.location} setLocation={data.setLocation} />
+      <FilesList folds={data.folds} location={data.location} setLocation={data.setLocation} setData={data.setData} />
       {false&&<Button title='loading' onPress={()=>{
         loading(true, 'button');
         setTimeout(()=>{loading(false, 'button')}, 1000)
       }} />}
-      {true&&<Button title='обновить' style={{margin: 10}} onPress={()=>{
-          getContent(data.location)
-          .then((res: Data | null) => {
-            console.log(res)
-            if (res !== null) data.setData(res)
-          })}} />}
-      {false&&<Loading />}
+      {false&&<Button title='обновить' style={{margin: 10}} onPress={()=>{
+        loading(true, 'indexUpdate');
+        getContent(data.location)
+        .then((res: Data | null) => {
+          console.log(res)
+          if (res !== null) data.setData(res)
+        })
+        .catch((e: any) => console.log(e))
+        .finally(()=>loading(false, 'indexUpdate'))
+      }} />}
     </Box>
   );
 }

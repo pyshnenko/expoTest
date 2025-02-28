@@ -8,6 +8,8 @@ interface Props {name: string, type: string, active: boolean, index: number, dou
 
 export default function FolderShortcat({name, type, active, index, doubleClick, longPress, location}: Props) {
 
+    const nameShortText: string = shortName(name, active);
+
     return (
         
         <TouchableOpacity onPress={()=>doubleClick(index)} onLongPress={()=>longPress(index)}>
@@ -15,7 +17,7 @@ export default function FolderShortcat({name, type, active, index, doubleClick, 
                 style={{ 
                     width: 100, 
                     padding: 4,
-                    height: 100, 
+                    height: active ? 'auto' : 100, 
                     display: 'flex',
                     flexDirection: 'column',
                     flexWrap: 'nowrap',
@@ -26,13 +28,19 @@ export default function FolderShortcat({name, type, active, index, doubleClick, 
                 }}
             >
                 {FileView(type, name, location)}
-                <Text style={{textAlign: 'center', fontSize: 14}} android_hyphenationFrequency="normal">{name}</Text>
+                <Text style={{textAlign: 'center', fontSize: 14}} android_hyphenationFrequency="normal">{nameShortText}</Text>
             </Box>
         </TouchableOpacity>)
 }
 
+function shortName(name: string, active: boolean) {
+    if (active) return name
+    else if (name.length < 22) return name
+    else return (name.slice(0, 20) + '...')
+}
+
 function FileView(type: string, name: string, location: string) {
-    console.log(location)
+    //console.log(location)
     switch (type) {
         case 'image': return (<Box style={{width: 48, height: 48}}>
             <Image 

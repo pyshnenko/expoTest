@@ -4,6 +4,7 @@ import { LoginTabs, GuestsTabs } from '@/components/pageElements/tabs';
 import {Data} from '@/hooks/useFolderLocation';
 import { startAuth } from '@/components/mech/startAuth';
 import { saveContext, getContent } from '@/hooks/useFolderLocation';
+import { useLoading } from '@/components/pageElements/loading';
 
 const FolderContext = createContext({
   folds: {}, 
@@ -13,6 +14,8 @@ const FolderContext = createContext({
 });
 
 export default function TabLayout() {
+
+  const loading = useLoading;
   console.log('\n\n\nhello\n\n\n')
   const [ loginState, setLoginState ] = useState<boolean>(false);
   const [ data, setData ] = useState<Data>({directs: [], files: []});
@@ -37,6 +40,7 @@ export default function TabLayout() {
 
   useEffect(()=>{
     console.log('layout use effect location')
+    loading(true, 'updateLocation');
     setData({directs: [], files: []})
     console.log(location);
     getContent(location)
@@ -44,13 +48,15 @@ export default function TabLayout() {
       console.log(res)
       if (res !== null) setData(res)
     })
+    .catch((e: any) => console.log(e))
+    .finally(()=>loading(false, 'updateLocation'))
   }, [location])
 
   /*async function openLocation(str: string) {
     console.log(await )
   }*/
 
-  createUserAuth(loginState, setLoginState);
+  createUserAuth(loginState, setLoginState, setData);
 
   return (
     <FolderContext.Provider value={{folds: data, location: location, setLocation, setData }}>{loginState ? <LoginTabs /> : <GuestsTabs />}</FolderContext.Provider>

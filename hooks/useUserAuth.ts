@@ -1,8 +1,10 @@
 import {useState, useEffect} from 'react';
 import localStorage from '@/components/mech/storage';
+import { Data } from './useFolderLocation';
 
 let storage = false;
 let setStorage: (e: boolean) => void;
+let setDataBuf: (data: Data)=>void;
 
 export function useUserAuth(props: boolean | null) {
     if ((props) || (props === false))
@@ -12,7 +14,8 @@ export function useUserAuth(props: boolean | null) {
     return storage
 }
 
-export function createUserAuth(state: boolean, setState: (e: boolean) => void) {
+export function createUserAuth(state: boolean, setState: (e: boolean) => void, setData: (data: Data)=>void) {
+    setDataBuf = setData;
     setStorage = setState;
     storage = state;
 }
@@ -47,6 +50,7 @@ const exit = () => {
     localStorage.setItem('cloudToken', '', 'useUserAuth');
     localStorage.setItem('cloudAToken', '', 'useUserAuth');
     setStorage(false);
+    setDataBuf({files: [], directs: []})
     stoken = '';
     satoken = '';
     auth = false;
