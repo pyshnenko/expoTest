@@ -6,6 +6,7 @@ import FolderShortcat from "../ui/FolderShortcat";
 import { TouchableOpacity, Dimensions, ScrollView } from "react-native";
 import { useLoading } from '@/components/pageElements/loading';
 import { getContent } from '@/hooks/useFolderLocation';
+import ElementMenue from '@/components/pageElements/elementMenue';
 
 const windowDimensions = Dimensions.get('window');
 
@@ -14,6 +15,7 @@ const loading = useLoading;
 export default function FilesList({folds, location, setLocation, setData}: {folds: Data, location: string, setLocation: (str: string) => void, setData: (data: Data)=>void }) {
     const [ pos, setPos ] = useState<number>(-3);
     const [width, setWidth] = useState(windowDimensions);
+    const [ open, setOpen ] = useState(true)
 
     useEffect(()=>{
         const subscription = Dimensions.addEventListener(
@@ -61,10 +63,8 @@ export default function FilesList({folds, location, setLocation, setData}: {fold
             }
             else if (index === -1) {
                 let buf: string[] = location.split('/')
-                console.log(buf);
                 let newAddr: string = '/'
                 for (let i = 1; i < buf.length-2; i++ ) newAddr += buf[i]+'/'
-                console.log(newAddr);
                 setLocation(newAddr);
             }
             else if (index === -2) {
@@ -77,62 +77,66 @@ export default function FilesList({folds, location, setLocation, setData}: {fold
                 .catch((e: any) => console.log(e))
                 .finally(()=>loading(false, 'indexUpdate'))
             }
-            console.log(location)
         } else {
             setPos(index)
-            console.log(folds.directs[index])
             lastTap.current = now;
         }
     }
 
     const longPress = (index: number) => {
         console.log(index)
+        setOpen(true)
     }
     return (
-        <ScrollView><Box style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', maxWidth: width.width - (width.width%100)}}>
-            <FolderShortcat 
-                    name={'Обновить'} 
-                    type="update"
-                    active={false}
-                    index={-2}
-                    doubleClick={doubleClick}
-                    longPress={longPress}
-                    location={''}
-            />
-            {location !== '/' && 
-                <FolderShortcat 
-                    name={'Назад'} 
-                    type="arrow-back"
-                    active={false}
-                    index={-1}
-                    doubleClick={doubleClick}
-                    longPress={longPress}
-                    location={''}
-            />}
-            {folds.directs.map((item: string, index: number) => { return (
-                <FolderShortcat 
-                    name={item} 
-                    key={`folds-${index}`}
-                    type="folder"
-                    active={index === pos}
-                    doubleClick={doubleClick}
-                    longPress={longPress}
-                    index={index}
-                    location={location}
-                />
-            )})}
-            {folds.files.map((item: string, index: number) => { return (
-                <FolderShortcat 
-                    key={`files-${index}`}
-                    doubleClick={doubleClick}
-                    longPress={longPress}
-                    index={index + folds.directs.length}
-                    name={item} 
-                    type={nameToType(item)}
-                    active={index === (pos - folds.directs.length)}
-                    location={location}
-                />
-            )})}
-        </Box></ScrollView>
+        <Box style={{width: '100%', minHeight: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            {open&&<ElementMenue open={open} setOpen={setOpen} />}
+            <ScrollView>
+                <Box style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', maxWidth: width.width - (width.width%100)}}>
+                    <FolderShortcat 
+                        name={'Обновить'} 
+                        type="update"
+                        active={false}
+                        index={-2}
+                        doubleClick={doubleClick}
+                        longPress={longPress}
+                        location={''}
+                    />
+                    {location !== '/' && 
+                        <FolderShortcat 
+                            name={'Назад'} 
+                            type="arrow-back"
+                            active={false}
+                            index={-1}
+                            doubleClick={doubleClick}
+                            longPress={longPress}
+                            location={''}
+                    />}
+                    {folds.directs.map((item: string, index: number) => { return (
+                        <FolderShortcat 
+                            name={item} 
+                            key={`folds-${index}`}
+                            type="folder"
+                            active={index === pos}
+                            doubleClick={doubleClick}
+                            longPress={longPress}
+                            index={index}
+                            location={location}
+                        />
+                    )})}
+                    {folds.files.map((item: string, index: number) => { return (
+                        <FolderShortcat 
+                            key={`files-${index}`}
+                            doubleClick={doubleClick}
+                            longPress={longPress}
+                            index={index + folds.directs.length}
+                            name={item} 
+                            type={nameToType(item)}
+                            active={index === (pos - folds.directs.length)}
+                            location={location}
+                        />
+                    )})}
+                </Box>
+            </ScrollView>
+        </Box>
     )
 }
