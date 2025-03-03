@@ -3,10 +3,12 @@ import { Data } from "@/hooks/useFolderLocation";
 import { Button } from "@react-native-material/core";
 import { Box, Text } from "@react-native-material/core";
 import FolderShortcat from "../ui/FolderShortcat";
-import { TouchableOpacity, Dimensions, ScrollView } from "react-native";
+import { TouchableOpacity, Dimensions, ScrollView, PermissionsAndroid } from "react-native";
 import { useLoading } from '@/components/pageElements/loading';
 import { getContent } from '@/hooks/useFolderLocation';
 import ElementMenue from '@/components/pageElements/elementMenue';
+import { download } from "../mech/download";
+import { dataUrl } from "../mech/httpserv";
 
 const windowDimensions = Dimensions.get('window');
 
@@ -57,39 +59,59 @@ export default function FilesList({folds, location, setLocation, setData}: {fold
         const DOUBLE_PRESS_DELAY = 1000;
         if ((now - lastTap.current) < DOUBLE_PRESS_DELAY) {
             setPos(-2)
-            if ((index >= 0)&&(index < folds.directs.length)) {
-                const objName: string = folds.directs[index]
-                setLocation((location||'/') + objName + '/')
-            }
-            else if (index === -1) {
-                let buf: string[] = location.split('/')
-                let newAddr: string = '/'
-                for (let i = 1; i < buf.length-2; i++ ) newAddr += buf[i]+'/'
-                setLocation(newAddr);
-            }
-            else if (index === -2) {
-                loading(true, 'indexUpdate');
-                getContent(location)
-                .then((res: Data | null) => {
-                    console.log(res)
-                    if (res !== null) setData(res)
-                })
-                .catch((e: any) => console.log(e))
-                .finally(()=>loading(false, 'indexUpdate'))
-            }
+            newLocation(index)
+            
         } else {
             setPos(index)
             lastTap.current = now;
         }
     }
 
+    const newLocation = (index: number) => {
+        if ((index >= 0)&&(index < folds.directs.length)) {
+            const objName: string = folds.directs[index]
+            setLocation((location||'/') + objName + '/')
+        }
+        else if (index === -1) {
+            let buf: string[] = location.split('/')
+            let newAddr: string = '/'
+            for (let i = 1; i < buf.length-2; i++ ) newAddr += buf[i]+'/'
+            setLocation(newAddr);
+        }
+        else if (index === -2) {
+            loading(true, 'indexUpdate');
+            getContent(location)
+            .then((res: Data | null) => {
+                console.log(res)
+                if (res !== null) setData(res)
+            })
+            .catch((e: any) => console.log(e))
+            .finally(()=>loading(false, 'indexUpdate'))
+        }
+    }
+
+    const longPressMenueAction = async (action: string) => {
+        setOpen(false)
+        setPos(-2)
+        console.log(pos)
+        switch (action) {
+            case 'Открыть': return newLocation(pos);
+            case 'Скачать': {
+                const name = pos >= folds.directs.length ? folds.files[pos - folds.directs.length] : folds.directs[pos]
+                console.log('download')
+                download(location, name)
+            }
+        }
+    }
+
     const longPress = (index: number) => {
         console.log(index)
+        setPos(index)
         setOpen(true)
     }
     return (
         <Box style={{width: '100%', minHeight: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-            {open&&<ElementMenue open={open} setOpen={setOpen} />}
+            {open&&<ElementMenue open={open} setOpen={setOpen} file={pos >= folds.directs.length} setAction={longPressMenueAction} />}
             <ScrollView>
                 <Box style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', maxWidth: width.width - (width.width%100)}}>
                     <FolderShortcat 

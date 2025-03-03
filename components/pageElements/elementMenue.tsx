@@ -5,7 +5,14 @@ import { GestureResponderEvent, StyleSheet } from "react-native";
 let startTouchPosition = -1;
 let baseTopPosition = 60;
 
-export default function ElementMenue ({open, setOpen}: {open: boolean, setOpen: (b: boolean) => void}) {
+interface ElementMenueProps {
+    file: boolean, 
+    open: boolean, 
+    setOpen: (b: boolean) => void
+    setAction: (s: string) => void
+}
+
+export default function ElementMenue ({open, setOpen, file, setAction}: ElementMenueProps) {
 
     const [ topPosition, setTopPosition ] = useState(100);
 
@@ -28,49 +35,77 @@ export default function ElementMenue ({open, setOpen}: {open: boolean, setOpen: 
         <Box 
             style={{
                 position: 'absolute', 
-                top: `${topPosition}%`, 
+                top: 0, 
                 left: 0, 
-                backgroundColor: 'lightgray', 
                 width: '100%', 
-                minHeight: '200%', 
-                borderRadius: 30,
-                borderStyle: 'solid',
-                borderColor: 'black',
-                borderWidth: 3,
-                borderTopWidth: 15,
-                zIndex: 100,
-                paddingTop: 20
-            }}
-            onTouchStart={(evt: GestureResponderEvent)=>{startTouchPosition = evt.nativeEvent.changedTouches[0].pageY}}
-            onTouchEnd={()=>{
-                startTouchPosition = -1; 
-                if (topPosition > 80) {
-                    baseTopPosition = 60;
-                    setOpen(false)
-                    setTopPosition(60)
-                }
-                else baseTopPosition = topPosition
-            }}
-            onTouchMove={(evt: GestureResponderEvent)=>{
-                if (startTouchPosition >= 0) {
-                    const newPosition = baseTopPosition-(startTouchPosition - evt.nativeEvent.changedTouches[0].pageY)/7;
-                    setTopPosition(newPosition < 0 ? 0 : newPosition)
-                }
-            }}
-        >
-            <Button style={buttonStyle.button} title='Открыть' />
-            <Button style={buttonStyle.button} title='Скачать' />
-            <Button style={buttonStyle.button} title='Удалить' />
-            <Button style={buttonStyle.button} title='Поделиться' />
+                minHeight: '100%', 
+                zIndex: 100
+            }}>
+            <Box
+                onTouchEnd={()=>setOpen(false)} 
+                style={{
+                    position: 'absolute',
+                    backgroundColor: 'white',
+                    opacity: 0.5,
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%'
+            }}/>
+            <Box
+                style={{
+                    position: 'absolute', 
+                    top: `${topPosition}%`, 
+                    left: 0, 
+                    backgroundColor: 'lightgray', 
+                    width: '100%', 
+                    minHeight: '200%', 
+                    borderRadius: 30,
+                    borderStyle: 'solid',
+                    borderColor: 'black',
+                    borderWidth: 3,
+                    borderTopWidth: 15,
+                    zIndex: 101,
+                    paddingTop: 20
+                }}
+                onTouchStart={(evt: GestureResponderEvent)=>{startTouchPosition = evt.nativeEvent.changedTouches[0].pageY}}
+                onTouchEnd={()=>{
+                    startTouchPosition = -1; 
+                    if (topPosition > 80) {
+                        baseTopPosition = 60;
+                        setOpen(false)
+                        setTopPosition(60)
+                    }
+                    else baseTopPosition = topPosition
+                }}
+                onTouchMove={(evt: GestureResponderEvent)=>{
+                    if (startTouchPosition >= 0) {
+                        const newPosition = baseTopPosition-(startTouchPosition - evt.nativeEvent.changedTouches[0].pageY)/7;
+                        setTopPosition(newPosition < 0 ? 0 : newPosition)
+                    }
+                }}
+            >
+                {!file&&<Button contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Открыть' onPress={()=>setAction('Открыть')} />}
+                <Button contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Скачать' onPress={()=>setAction('Скачать')} />
+                <Button contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Удалить' />
+                <Button contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Поделиться' />
+            </Box>
         </Box>
     )
 }
 
 const buttonStyle = StyleSheet.create({button: {
-    height: 50,
-    color: 'black',
-    backgroundColor: 'lightgray',
-    borderRadius: 0, 
-    alignItems: 'flex-start', 
-    justifyContent: 'center'
+        height: 50,
+        color: "#841584",
+        borderRadius: 0, 
+        alignItems: 'flex-start', 
+        justifyContent: 'center',
+        width: '100%',
+        
+    },
+    buttonIn: {
+        width: '100%',
+        height: 50,
+        textAlign: 'left',
+        justifyContent: 'flex-start',
 }})
