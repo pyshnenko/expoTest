@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import { Box, Button } from "@react-native-material/core";
+import { Box, Button, Icon, IconComponentProvider } from "@react-native-material/core";
 import { GestureResponderEvent, StyleSheet } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+//import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 let startTouchPosition = -1;
 let baseTopPosition = 60;
@@ -85,10 +87,10 @@ export default function ElementMenue ({open, setOpen, file, setAction}: ElementM
                     }
                 }}
             >
-                {!file&&<Button contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Открыть' onPress={()=>setAction('Открыть')} />}
-                <Button contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Скачать' onPress={()=>setAction('Скачать')} />
-                <Button contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Удалить' />
-                <Button contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Поделиться' />
+                {!file&&<Button leading={(props)=><MaterialIcons name='folder-open' {...props} />} contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Открыть' onPress={()=>setAction('Открыть')} />}
+                <Button leading={(props)=><MaterialIcons name='download' {...props} />} contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Скачать' onPress={()=>setAction('Скачать')} />
+                <Button leading={(props)=><MaterialIcons name='delete' {...props} />} contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Удалить' onPress={()=>setAction('Удалить')} />
+                <Button leading={(props)=><MaterialIcons name='share' {...props} />} contentContainerStyle={buttonStyle.buttonIn} variant="outlined" color="#0000FF" title='Поделиться' />
             </Box>
         </Box>
     )

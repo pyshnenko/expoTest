@@ -9,6 +9,8 @@ import { getContent } from '@/hooks/useFolderLocation';
 import ElementMenue from '@/components/pageElements/elementMenue';
 import { download } from "../mech/download";
 import { dataUrl } from "../mech/httpserv";
+import Api from "../mech/api";
+import { User } from "@/hooks/useUserAuth";
 
 const windowDimensions = Dimensions.get('window');
 
@@ -100,6 +102,13 @@ export default function FilesList({folds, location, setLocation, setData}: {fold
                 const name = pos >= folds.directs.length ? folds.files[pos - folds.directs.length] : folds.directs[pos]
                 console.log('download')
                 download(location, name)
+            }
+            case 'Удалить': {
+                loading(true, 'rm');
+                const fName: string = pos >= folds.directs.length ? folds.files[pos - folds.directs.length] : folds.directs[pos];
+                await Api.askLS(User.getToken(), location, 'rm', fName);
+                newLocation(-2);
+                loading(false, 'rm')
             }
         }
     }
